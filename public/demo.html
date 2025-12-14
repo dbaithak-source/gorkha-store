@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gorkha Jaibik - Premium Himalayan D2C</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f1e8 0%, #f0ebe0 100%);
+        }
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #065f46 50%, #0f172a 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .hero-content { max-width: 900px; }
+        .badges {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .badge {
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .badge-emerald { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; }
+        .badge-amber { background: rgba(251, 191, 36, 0.2); color: #fcd34d; }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        h1 span { color: #4ade80; }
+        .subtitle {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+        .btn {
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+        .btn-primary:hover { background: #059669; }
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding-top: 50px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number { font-size: 2.5rem; font-weight: 800; color: #4ade80; }
+        .stat-label { font-size: 0.875rem; color: #d1d5db; }
+        .features {
+            padding: 80px 40px;
+            background: #f5f1e8;
+            color: #1f2937;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .feature-icon { font-size: 3rem; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 1.25rem; margin-bottom: 15px; color: #111827; }
+        .feature-card p { color: #6b7280; }
+        .products {
+            padding: 80px 40px;
+            background: white;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .product-image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #d1fae5 0%, #e0f2fe 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .product-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+        .product-card p { font-size: 0.875rem; color: #6b7280; margin-bottom: 15px; }
+        .btn-learn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-learn:hover { background: #059669; }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badges">
+                <span class="badge badge-emerald">🏔️ From the Himalayas</span>
+                <span class="badge badge-amber">✅ ISO & Organic Certified</span>
+                <span class="badge badge-blue">�� Exports to 50+ Countries</span>
+            </div>
+            <h1>Pure Himalayan Wellness<br><span>Delivered Globally</span></h1>
+            <p class="subtitle">Premium organic products sourced directly from the pristine Himalayas. Shilajit, Raw Honey, Ghee, Cashmere & more. Direct-to-Consumer excellence with B2B bulk options available.</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Shop Products</button>
+                <button class="btn btn-secondary">Bulk Orders</button>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.8⭐</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose Gorkha Jaibik?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏔️</div>
+                    <h3>Himalayan Sourced</h3>
+                    <p>Direct partnerships with 200+ local farmers in Nepal. Pure, authentic products at the source.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Certified Pure</h3>
+                    <p>ISO 9001, Organic Certified, Fair Trade Certified. Third-party tested for quality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Shipping</h3>
+                    <p>Fast, reliable shipping to 50+ countries. Track your order in real-time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCTS SECTION -->
+    <section class="products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-image">📦</div>
+                    <h3>Himalayan Shilajit</h3>
+                    <p>Pure mineral supplement from high altitude</p>
+                    <button class="btn-learn">Learn More</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">📦</div>
+                    <h3>Raw Wild Honey</h3>
+                    <p>Unfiltered, unpasteurized natural honey</p>
+                    <button class="btn-learn">Learn More</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">📦</div>
+                    <h3>Pure Cow Ghee</h3>
+                    <p>Traditional clarified butter, rich in nutrients</p>
+                    <button class="btn-learn">Learn More</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">📦</div>
+                    <h3>100% Pure Cashmere</h3>
+                    <p>Luxury fabric from Kashmir region</p>
+                    <button class="btn-learn">Learn More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
