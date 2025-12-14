@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Footer from '@/components/Footer';
 
 interface Product {
   id: number;
@@ -137,30 +138,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h4 className="font-bold mb-4">Parent Company</h4>
-              <p className="text-gray-400 text-sm mb-2"><strong>Glaum Organics Pv.t Ltd.</strong></p>
-              <p className="text-gray-400 text-sm">Adarsh Nagar, Birgunj</p>
-              <p className="text-gray-400 text-sm">Our parent company ensures quality across all products.</p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Direct from Farm</h4>
-              <p className="text-gray-400 text-sm">All our products are sourced directly from certified organic farms in the Himalayan region.</p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4">Certified Organic</h4>
-              <p className="text-gray-400 text-sm">We maintain the highest standards of organic certification and quality control.</p>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2024 Gorkha Jaibik. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
