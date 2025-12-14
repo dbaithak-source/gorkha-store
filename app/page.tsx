@@ -16,7 +16,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 py-20">
           <div className="mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" className="h-24 w-24 mx-auto mb-6" style={{filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))'}}><circle cx="100" cy="100" r="95" fill="white" stroke="#2d3436" strokeWidth="2"/><text x="100" y="85" fontSize="28" fontWeight="bold" textAnchor="middle" fontFamily="Georgia, serif" fill="#2d3436">GORKHA</text><text x="100" y="120" fontSize="28" fontWeight="bold" textAnchor="middle" fontFamily="Georgia, serif" fill="#2d3436">JAIBIK</text><circle cx="100" cy="100" r="88" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0.7"/></svg>
+          public/images
+          
+
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 font-georgia">GORKHA JAIBIK</h1>
           <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl">Premium Himalayan Products from the Heart of Nepal</p>
