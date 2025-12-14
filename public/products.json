@@ -1,0 +1,12 @@
+[
+  {"id":1,"name":"Lychee Honey","variants":[{"size":"30 ml (~30g)","price":"$1.19"},{"size":"100 ml (~120g)","price":"$3.49"},{"size":"240 ml (~350g)","price":"$6.43"},{"size":"380 ml (~500g)","price":"$8.40"}],"category":"honey","image":"/images/honey.jpg","description":"Pure Lychee Flower Honey"},
+  {"id":2,"name":"Rudilo Honey","price":"$16.99","category":"honey","image":"/images/honey.jpg","description":"Premium Rudilo Honey"},
+  {"id":3,"name":"Churi Honey","price":"$14.99","category":"honey","image":"/images/honey.jpg","description":"Organic Churi Honey"},
+  {"id":4,"name":"Mustard Honey","price":"$17.99","category":"honey","image":"/images/honey.jpg","description":"Pure Mustard Flower Honey"},
+  {"id":5,"name":"Faffar Honey","price":"$18.99","category":"honey","image":"/images/honey.jpg","description":"Rare Faffar Honey"},
+  {"id":6,"name":"Mad Honey","price":"$24.99","category":"honey","image":"/images/honey.jpg","description":"Premium Mad Honey"},
+  {"id":7,"name":"100% Organic Cow Ghee","price":"$22.99","category":"ghee","image":"/images/ghee.jpg","description":"Pure Cow Ghee, Traditionally churned"},
+  {"id":8,"name":"Raw Malt","price":"$12.99","category":"other","image":"/images/malt.jpg","description":"Organic Raw Malt"},
+  {"id":9,"name":"Organic Oil","price":"$18.99","category":"other","image":"/images/oil.jpg","description":"100% Organic Oil"},
+  {"id":10,"name":"100% Pure Turmeric","price":"$9.99","category":"spices","image":"/images/turmeric.jpg","description":"Pure Turmeric Powder"}
+]
