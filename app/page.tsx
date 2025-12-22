@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Footer from 'from '../components/Footer';
-
+import Footer from '../components/Footer';
 interface Product {
   id: number;
   name: string;
