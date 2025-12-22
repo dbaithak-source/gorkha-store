@@ -11,7 +11,7 @@ interface Product {
   category: string;
   image: string;
   description: string;
-  variants?: Array<{ size: string; price: string }>;
+  variants?: string[];
 }
 
 interface CartItem {
@@ -21,6 +21,15 @@ interface CartItem {
   price: number;
   quantity: number;
 }
+
+// Helper function to extract price from variant string
+const extractPriceFromVariant = (variant: string): number => {
+  const match = variant.match(/₹([0-9,]+)/);
+  if (match && match[1]) {
+    return parseInt(match[1].replace(/,/g, ''), 10);
+  }
+  return 0;
+};
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,11 +58,11 @@ export default function Home() {
       return;
     }
 
-    const variantData = product.variants?.find(v => v.size === variant);
-    if (!variantData) return;
-
-    const priceStr = variantData.price.replace(/[^0-9]/g, '');
-    const price = parseInt(priceStr);
+    const price = extractPriceFromVariant(variant);
+    if (price === 0) {
+      alert('Could not extract price from variant');
+      return;
+    }
 
     const existingItem = cart.find(
       item => item.productId === product.id && item.variant === variant
@@ -91,7 +100,6 @@ export default function Home() {
     }
 
     const totalAmount = getTotalPrice();
-    const cartSummary = cart.map(item => `${item.productName} (${item.variant}) x${item.quantity}`).join(', ');
 
     // Khalti Payment Integration
     const khaltiConfig = {
@@ -252,7 +260,7 @@ export default function Home() {
                     <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                     
-                    {product.variants ? (
+                    {product.variants && product.variants.length > 0 ? (
                       <div className="space-y-3">
                         <select
                           value={selectedVariants[product.id] || ''}
@@ -261,8 +269,8 @@ export default function Home() {
                         >
                           <option value="">Select size...</option>
                           {product.variants.map((variant, idx) => (
-                            <option key={idx} value={variant.size}>
-                              {variant.size} - {variant.price}
+                            <option key={idx} value={variant}>
+                              {variant}
                             </option>
                           ))}
                         </select>
