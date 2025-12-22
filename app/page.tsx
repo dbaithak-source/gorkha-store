@@ -153,8 +153,7 @@ export default function Home() {
             <div className="flex items-center gap-6">
               {/* Logo */}
               <img 
-                src="/gorkha-logo.svg" 
-                alt="Gorkha Jaibik Logo" 
+            src="/gorkha-logo.svg"                alt="Gorkha Jaibik Logo" 
                 className="w-24 h-24 object-contain"
               />
               
