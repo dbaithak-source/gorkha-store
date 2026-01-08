@@ -247,13 +247,13 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                  <div className="relative h-48 bg-gray-200 flex>
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="ww-full h-full object-contain flex items-center justify-center
-                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200'; }}
-                    />
+                  <div className="relative h-48 bg-gray-200 flex">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200'; }}
+                />
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
