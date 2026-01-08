@@ -1,323 +1,116 @@
 'use client';
-
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import Footer from '../components/Footer';
-
-interface Product {
-  id: number;
-  name: string;
-  price?: string;
-  category: string;
-  image: string;
-  description: string;
-  variants?: string[];
-}
-
-interface CartItem {
-  productId: number;
-  productName: string;
-  variant: string;
-  price: number;
-  quantity: number;
-}
-
-// Helper function to extract price from variant string
-const extractPriceFromVariant = (variant: string): number => {
-  const match = variant.match(/₹([0-9,]+)/);
-  if (match && match[1]) {
-    return parseInt(match[1].replace(/,/g, ''), 10);
-  }
-  return 0;
-};
+import { useState } from 'react';
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [showCart, setShowCart] = useState(false);
-  const [selectedVariants, setSelectedVariants] = useState<{ [key: number]: string }>({});
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await fetch('/products.json');
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Failed to load products:', error);
-      }
-      setLoading(false);
-    };
-    loadProducts();
-  }, []);
-
-  const addToCart = (product: Product, variant: string) => {
-    if (!variant) {
-      alert('Please select a variant');
-      return;
-    }
-
-    const price = extractPriceFromVariant(variant);
-    if (price === 0) {
-      alert('Could not extract price from variant');
-      return;
-    }
-
-    const existingItem = cart.find(
-      item => item.productId === product.id && item.variant === variant
-    );
-
-    if (existingItem) {
-      setCart(cart.map(item =>
-        item.productId === product.id && item.variant === variant
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCart([...cart, {
-        productId: product.id,
-        productName: product.name,
-        variant,
-        price,
-        quantity: 1
-      }]);
-    }
-  };
-
-  const removeFromCart = (productId: number, variant: string) => {
-    setCart(cart.filter(item => !(item.productId === productId && item.variant === variant)));
-  };
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      alert('Please add items to cart');
-      return;
-    }
-
-    const totalAmount = getTotalPrice();
-
-    // Khalti Payment Integration
-    const khaltiConfig = {
-      publicKey: 'test_public_key_....', // Replace with your actual Khalti public key
-      productIdentity: 'gorkha-jaibik-store',
-      productName: 'Gorkha Jaibik Products',
-      productUrl: window.location.href,
-      eventHandler: {
-        onSuccess: (payload: any) => {
-          console.log('Payment successful:', payload);
-          alert('Payment successful! Your order has been placed.');
-          setCart([]);
-          setShowCart(false);
-        },
-        onError: (error: any) => {
-          console.error('Payment error:', error);
-          alert('Payment failed. Please try again.');
-        },
-        onClose: () => {
-          console.log('Payment dialog closed');
-        }
-      },
-      amount: totalAmount * 100 // Khalti uses paisa (cents)
-    };
-
-    // Load Khalti script dynamically
-    const script = document.createElement('script');
-    script.src = 'https://khalti.s3.amazonaws.com/KPG/dist/2.0.0/khalti-checkout.min.js';
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      (window as any).KhaltiCheckout.configure(khaltiConfig);
-      (window as any).KhaltiCheckout.show({ amount: totalAmount * 100 });
-    };
-  };
+  const [page, setPage] = useState('home');
+  const [cart, setCart] = useState<any[]>([]);
 
   return (
     <div className="w-full">
-      {/* Hero Section */}
-      <section className="min-h-screen bg-cover bg-center relative" style={{
-        backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop)',
-        backgroundColor: '#1a472a'
-      }}>
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/40"/>
-
-        {/* Content Container */}
-        <div className="relative z-10 max-w-7xl mx-auto h-full flex items-center px-6 py-20">
-          <div className="flex items-center justify-between w-full">
-            {/* Left side: Logo and Text */}
-            <div className="flex items-center gap-6">
-              {/* Logo */}
-              <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-green-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  GJ
-                </div>
-              
-              {/* Text Content */}
-              <div>
-                <h1 className="text-5xl font-bold text-white mb-4">GORKHA JAIBIK</h1>
-                <p className="text-xl text-white/90 max-w-sm leading-relaxed">
-                  Breathe in the purity of nature, live the poetry of health
-                </p>
-              </div>
-            </div>
-
-            {/* Right side: CTA Button */}
-            <div className="flex gap-4">
-              <button 
-                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg"
-                onClick={() => document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                SHOP NOW
-              </button>
-              {cart.length > 0 && (
-                <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg relative"
-                  onClick={() => setShowCart(!showCart)}
-                >
-                  CART ({cart.length})
-                </button>
-              )}
-            </div>
+      {/* NAVIGATION */}
+      <nav className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <button onClick={() => setPage('home')} className="text-2xl font-bold text-teal-600">Gorkha Jaibik</button>
+          <div className="flex gap-8">
+            <button onClick={() => setPage('home')} className={page === 'home' ? 'text-teal-600 font-bold' : 'hover:text-teal-600'}>Home</button>
+            <button onClick={() => setPage('about')} className={page === 'about' ? 'text-teal-600 font-bold' : 'hover:text-teal-600'}>About</button>
+            <button onClick={() => setPage('products')} className={page === 'products' ? 'text-teal-600 font-bold' : 'hover:text-teal-600'}>Products</button>
+            <button onClick={() => setPage('blog')} className={page === 'blog' ? 'text-teal-600 font-bold' : 'hover:text-teal-600'}>Blog</button>
+            <button onClick={() => setPage('shop')} className="bg-teal-600 text-white px-6 py-2 rounded hover:bg-teal-700">Shop</button>
           </div>
         </div>
-      </section>
+      </nav>
 
-      {/* Cart Sidebar */}
-      {showCart && cart.length > 0 && (
-        <section className="fixed right-0 top-0 w-96 h-screen bg-white shadow-2xl overflow-y-auto z-50">
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Shopping Cart</h2>
-              <button
-                onClick={() => setShowCart(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-              >
-                ×
-              </button>
+      {page === 'home' && (
+        <div>
+          {/* HERO */}
+          <section className="h-96 bg-cover bg-center flex items-center justify-center relative" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200)'}}>
+            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="relative z-10 text-center text-white">
+              <h1 className="text-5xl font-bold mb-4">GORKHA JAIBIK</h1>
+              <p className="text-2xl mb-8">From Himalayas To The World</p>
+              <button onClick={() => setPage('shop')} className="bg-teal-600 hover:bg-teal-700 px-8 py-3 rounded-lg text-lg font-bold">SHOP NOW</button>
             </div>
+          </section>
 
-            {cart.map((item, idx) => (
-              <div key={idx} className="mb-4 p-4 bg-gray-100 rounded-lg">
-                <h3 className="font-bold text-gray-800">{item.productName}</h3>
-                <p className="text-sm text-gray-600">{item.variant}</p>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-green-600 font-bold">₹{item.price.toLocaleString()}</span>
-                  <div className="flex gap-2 items-center">
-                    <span className="text-gray-700">x{item.quantity}</span>
-                    <button
-                      onClick={() => removeFromCart(item.productId, item.variant)}
-                      className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* WELCOME */}
+          <section className="max-w-4xl mx-auto py-16 px-6">
+            <h2 className="text-4xl font-bold text-center mb-8">Welcome to Gorkha Jaibik</h2>
+            <p className="text-lg text-gray-700 text-center leading-relaxed mb-8">"At Gorkha Jaibik, we bring the essence of the Himalayas into everyday living. From wild honey, shilajit, oils, ghee, food grains, and superfoods to herbs, spices, bamboo crafts, handloom, and organic fabrics—each product carries purity, tradition, and sustainability from Nepal to the world."</p>
+            <div className="text-center bg-teal-50 p-8 rounded-lg"><p className="text-2xl italic font-semibold">"Nature is not our resource — it is our lineage."</p></div>
+          </section>
 
-            <div className="mt-8 pt-6 border-t border-gray-300">
-              <div className="flex justify-between items-center mb-6">
-                <span className="text-xl font-bold text-gray-800">Total:</span>
-                <span className="text-2xl font-bold text-green-600">₹{getTotalPrice().toLocaleString()}</span>
+          {/* WHY CHOOSE US */}
+          <section className="bg-gray-50 py-16">
+            <div className="max-w-6xl mx-auto px-6">
+              <h2 className="text-3xl font-bold text-center mb-12">Why Choose Gorkha Jaibik?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-600"><h3 className="text-xl font-bold mb-3">100% Organic & Pure</h3><p className="text-gray-700">Every product is carefully selected to ensure maximum purity and organic certification.</p></div>
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-600"><h3 className="text-xl font-bold mb-3">Himalayan Heritage</h3><p className="text-gray-700">Sourced from high-altitude regions with nutritional bounty of the Himalayas.</p></div>
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-amber-600"><h3 className="text-xl font-bold mb-3">Sustainable & Ethical</h3><p className="text-gray-700">We work directly with local farmers ensuring fair trade practices.</p></div>
+                <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-orange-600"><h3 className="text-xl font-bold mb-3">Premium Quality</h3><p className="text-gray-700">Each item is handpicked for superior quality and authenticity.</p></div>
               </div>
-              <button
-                onClick={handleCheckout}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition"
-              >
-                Proceed to Khalti Checkout
-              </button>
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* FOOTER */}
+          <footer className="bg-gray-900 text-white py-12">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div><h3 className="text-2xl font-bold mb-2">GORKHA JAIBIK</h3><p className="text-gray-400">Premium Himalayan Products</p></div>
+                <div><h4 className="font-bold mb-4">NAVIGATION</h4><ul className="space-y-2 text-gray-400"><li><button onClick={() => setPage('home')} className="hover:text-white">Home</button></li><li><button onClick={() => setPage('about')} className="hover:text-white">About</button></li><li><button onClick={() => setPage('products')} className="hover:text-white">Products</button></li></ul></div>
+                <div><h4 className="font-bold mb-4">CONTACT</h4><p className="text-gray-400">📍 Birganj, Nepal</p><p className="text-gray-400">📱 +977-51-522573</p><p className="text-gray-400">📧 glaumorganics2025@gmail.com</p></div>
+                <div><h4 className="font-bold mb-4">FOLLOW</h4><p className="text-gray-400">@gorkhajaibik</p><p className="text-gray-400">Gorkha Jaibik</p></div>
+              </div>
+              <div className="border-t border-gray-700 pt-8 text-center text-gray-400"><p>© 2024 Gorkha Jaibik | GLAUM ORGANICS PVT. LTD.</p></div>
+            </div>
+          </footer>
+        </div>
       )}
 
-      {/* Products Section */}
-      <section id="products" className="py-16 bg-gradient-to-r from-amber-50 to-orange-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">What We Offer</h2>
-          
-          {loading ? (
-            <p className="text-center text-gray-600">Loading products...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                  <div className="relative h-48 bg-gray-200 flex">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200'; }}
-                />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
-                    
-                    {product.variants && product.variants.length > 0 ? (
-                      <div className="space-y-3">
-                        <select
-                          value={selectedVariants[product.id] || ''}
-                          onChange={(e) => setSelectedVariants({...selectedVariants, [product.id]: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded text-sm"
-                        >
-                          <option value="">Select size...</option>
-                          {product.variants.map((variant, idx) => (
-                            <option key={idx} value={variant}>
-                              {variant}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => addToCart(product, selectedVariants[product.id] || '')}
-                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="text-xl font-bold text-green-600 mb-3">{product.price}</p>
-                        <button
-                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+      {page === 'about' && (
+        <div>
+          <div className="max-w-4xl mx-auto py-16 px-6">
+            <h1 className="text-5xl font-bold mb-4">About Gorkha Jaibik</h1>
+            <div className="bg-teal-50 p-8 rounded-lg mb-12"><p className="text-lg text-gray-700 leading-relaxed">Welcome to Gorkha Jaibik, your gateway to authentic Himalayan organic products, sourced directly from the pristine regions of Nepal and the Himalayas. Our mission is to bring the pure, unadulterated essence of Himalayan nature to your doorstep.</p></div>
+            <h2 className="text-3xl font-bold mb-8">Why Choose Gorkha Jaibik?</h2>
+            <div className="space-y-6">
+              <div className="border-l-4 border-teal-600 pl-6"><h3 className="text-xl font-bold mb-2">🌿 100% Organic & Pure</h3><p className="text-gray-700">Every product is carefully selected to ensure maximum purity and organic certification. We believe in nature's goodness without any additives or preservatives.</p></div>
+              <div className="border-l-4 border-green-600 pl-6"><h3 className="text-xl font-bold mb-2">🏔️ Himalayan Heritage</h3><p className="text-gray-700">Sourced from high-altitude regions, our products carry the nutritional bounty of the Himalayas.</p></div>
+              <div className="border-l-4 border-amber-600 pl-6"><h3 className="text-xl font-bold mb-2">♻️ Sustainable & Ethical</h3><p className="text-gray-700">We work directly with local farmers and producers, ensuring fair trade practices and sustainable harvesting methods.</p></div>
+              <div className="border-l-4 border-orange-600 pl-6"><h3 className="text-xl font-bold mb-2">✨ Premium Quality</h3><p className="text-gray-700">From raw honeys to organic spices, ghee, and traditional wellness products – each item is handpicked for superior quality and authenticity.</p></div>
             </div>
-          )}
+            <div className="mt-12 bg-white p-8 rounded-lg border border-gray-200"><h3 className="text-2xl font-bold mb-6">Our Products Include:</h3><ul className="space-y-3 text-gray-700"><li>✓ Raw & Medicinal Honeys (Lychee, Rudilo, Churi, Mustard, Faffar, Mad Honey)</li><li>✓ 100% Organic Ghee (Cow, Yak, Sheep Goat)</li><li>✓ Pure Himalayan Spices (Turmeric, and more)</li><li>✓ Traditional Wellness Products</li></ul></div>
+          </div>
+          <footer className="bg-gray-900 text-white py-12"><div className="max-w-6xl mx-auto px-6 text-center text-gray-400"><p>© 2024 Gorkha Jaibik | GLAUM ORGANICS PVT. LTD.</p></div></footer>
         </div>
-      </section>
+      )}
 
-      {/* Why Choose Us Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Ethically Sourced</h3>
-              <p className="text-gray-600">Direct from Farm</p>
-            </div>
-            <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Certified Organic</h3>
-              <p className="text-gray-600">100% Pure & Natural</p>
-            </div>
-            <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Premium Quality</h3>
-              <p className="text-gray-600">Highest Quality Standards</p>
+      {page === 'products' && (
+        <div>
+          <div className="max-w-6xl mx-auto py-16 px-6">
+            <h1 className="text-5xl font-bold mb-4 text-center">Our Premium Products</h1>
+            <p className="text-gray-600 text-center mb-12 text-lg">Discover Our Himalayan Organic Collection</p>
+            <div className="space-y-12">
+              <div><h2 className="text-3xl font-bold mb-6">🍯 Raw & Medicinal Honeys</h2><p className="text-gray-700">Lychee, Rudilo, Churi, Mustard, Faffar, Mad Honey - Each with unique properties and benefits sourced directly from Himalayan apiaries.</p></div>
+              <div><h2 className="text-3xl font-bold mb-6">🧈 100% Organic Ghee</h2><p className="text-gray-700">Cow, Yak, Sheep Goat, Buffalo - Traditionally clarified, grass-fed ghee rich in nutrients for cooking and wellness.</p></div>
+              <div><h2 className="text-3xl font-bold mb-6">🌿 Himalayan Spices</h2><p className="text-gray-700">Pure Turmeric and more - Premium Himalayan spices harvested and processed traditionally.</p></div>
+              <div><h2 className="text-3xl font-bold mb-6">💊 Traditional Wellness Products</h2><p className="text-gray-700">Shilajit, Supplements, and traditional formulations for optimal health and vitality.</p></div>
             </div>
           </div>
+          <footer className="bg-gray-900 text-white py-12"><div className="max-w-6xl mx-auto px-6 text-center text-gray-400"><p>© 2024 Gorkha Jaibik | GLAUM ORGANICS PVT. LTD.</p></div></footer>
         </div>
-      </section>
+      )}
 
-      <Footer />
-    </div>
-  );
-}
+      {page === 'blog' && (
+        <div>
+          <div className="max-w-6xl mx-auto py-16 px-6">
+            <h1 className="text-5xl font-bold mb-4 text-center">Blog & Articles</h1>
+            <p className="text-gray-600 text-center mb-12 text-lg">Learn about Himalayan Products and Health Benefits</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-teal-600"><h3 className="text-2xl font-bold mb-3">Raw Honey Benefits</h3><p className="text-gray-700 mb-4">Discover the amazing health benefits of raw, unfiltered Himalayan honey and how it supports your wellness journey.</p><button onClick={() => setPage('home')} className="text-teal-600 font-bold hover:underline">Read More →</button></div>
+              <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-600"><h3 className="text-2xl font-bold mb-3">Ghee: Liquid Gold</h3><p className="text-gray-700 mb-4">Learn why ghee is considered liquid gold in traditional medicine and its role in modern wellness.</p><button onClick={() => setPage('home')} className="text-teal-600 font-bold hover:underline">Read More →</button></div>
+              <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-amber-600"><h3 className="text-2xl font-bold mb-3">Shilajit: Nature's Power</h3><p className="text-gray-700 mb-4">Explore the ancient secrets of Himalayan Shilajit and its transformative health benefits.</p><button onClick={() => setPage('home')} className="text-teal-600 font-bold hover:underline">Read More →</button></div>
+            </div>
+          </div>
+          <footer className="bg-gray-900 text-white py-12"><div className="max-w-6xl mx-auto px-6 text-center text-gray-400"><p>© 2024 Gorkha Jaibik |
