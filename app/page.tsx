@@ -152,10 +152,9 @@ export default function Home() {
             {/* Left side: Logo and Text */}
             <div className="flex items-center gap-6">
               {/* Logo */}
-              <img 
-            src="/gorkha-logo.svg"                alt="Gorkha Jaibik Logo" 
-                className="w-24 h-24 object-contain"
-              />
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-green-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md">
+                  GJ
+                </div>
               
               {/* Text Content */}
               <div>
