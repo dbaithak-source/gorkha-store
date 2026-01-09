@@ -10,8 +10,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <div className="text-2xl font-bold text-green-700">
-              🍯 GORKHA JAIBIK
-            </div>
+                            GORKHA JAIBIK
           </Link>
 
           {/* Navigation Links */}
