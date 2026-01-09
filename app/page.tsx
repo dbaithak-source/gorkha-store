@@ -1,159 +1,317 @@
 'use client';
-import { useState } from 'react';
 
-const PRODUCTS = [
-  { id: 1, name: 'Pure Organic Grass-Fed Cow Ghee', price: 4999, category: 'ghee', desc: 'Premium clarified butter' },
-  { id: 2, name: 'Raw Himalayan Honey', price: 3499, category: 'honey', desc: 'Unfiltered medicinal honey' },
-  { id: 3, name: 'Himalayan Shilajit', price: 5999, category: 'wellness', desc: 'Pure mineral resin' },
-  { id: 4, name: 'Organic Turmeric Powder', price: 1299, category: 'spices', desc: 'High-curcumin turmeric' },
-];
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Footer from '../components/Footer';
+
+interface Product {
+  id: number;
+  name: string;
+  price?: string;
+  category: string;
+  image: string;
+  description: string;
+  variants?: Array<{ size: string; price: string }>;
+}
+
+interface CartItem {
+  productId: number;
+  productName: string;
+  variant: string;
+  price: number;
+  quantity: number;
+}
 
 export default function Home() {
-  const [page, setPage] = useState('home');
-  const [cart, setCart] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
+  const [selectedVariants, setSelectedVariants] = useState<{ [key: number]: string }>({});
 
-  const addToCart = (product: any) => {
-    setCart([...cart, product]);
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch('/products.json');
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+      }
+      setLoading(false);
+    };
+    loadProducts();
+  }, []);
+
+  const addToCart = (product: Product, variant: string) => {
+    if (!variant) {
+      alert('Please select a variant');
+      return;
+    }
+
+    const variantData = product.variants?.find(v => v.size === variant);
+    if (!variantData) return;
+
+    const priceStr = variantData.price.replace(/[^0-9]/g, '');
+    const price = parseInt(priceStr);
+
+    const existingItem = cart.find(
+      item => item.productId === product.id && item.variant === variant
+    );
+
+    if (existingItem) {
+      setCart(cart.map(item =>
+        item.productId === product.id && item.variant === variant
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCart([...cart, {
+        productId: product.id,
+        productName: product.name,
+        variant,
+        price,
+        quantity: 1
+      }]);
+    }
   };
 
-  const removeFromCart = (id: number) => {
-    setCart(cart.filter((_: any, i: number) => i !== id));
+  const removeFromCart = (productId: number, variant: string) => {
+    setCart(cart.filter(item => !(item.productId === productId && item.variant === variant)));
   };
 
-  const cartTotal = cart.reduce((sum: number, p: any) => sum + p.price, 0);
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
 
-  const handleCheckout = async () => {
-    const response = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart }),
-    });
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      alert('Please add items to cart');
+      return;
+    }
+
+    const totalAmount = getTotalPrice();
+    const cartSummary = cart.map(item => `${item.productName} (${item.variant}) x${item.quantity}`).join(', ');
+
+    // Khalti Payment Integration
+    const khaltiConfig = {
+      publicKey: 'test_public_key_....', // Replace with your actual Khalti public key
+      productIdentity: 'gorkha-jaibik-store',
+      productName: 'Gorkha Jaibik Products',
+      productUrl: window.location.href,
+      eventHandler: {
+        onSuccess: (payload: any) => {
+          console.log('Payment successful:', payload);
+          alert('Payment successful! Your order has been placed.');
+          setCart([]);
+          setShowCart(false);
+        },
+        onError: (error: any) => {
+          console.error('Payment error:', error);
+          alert('Payment failed. Please try again.');
+        },
+        onClose: () => {
+          console.log('Payment dialog closed');
+        }
+      },
+      amount: totalAmount * 100 // Khalti uses paisa (cents)
+    };
+
+    // Load Khalti script dynamically
+    const script = document.createElement('script');
+    script.src = 'https://khalti.s3.amazonaws.com/KPG/dist/2.0.0/khalti-checkout.min.js';
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      (window as any).KhaltiCheckout.configure(khaltiConfig);
+      (window as any).KhaltiCheckout.show({ amount: totalAmount * 100 });
+    };
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <img src="/images/gorkha-logo.svg" alt="Gorkha Jaibik" className="h-12" />          <div className="flex gap-6">
-            <button onClick={() => setPage('home')} className={`${page === 'home' ? 'text-teal-600' : ''}`}>Home</button>
-            <button onClick={() => setPage('about')} className={`${page === 'about' ? 'text-teal-600' : ''}`}>About</button>
-            <button onClick={() => setPage('products')} className={`${page === 'products' ? 'text-teal-600' : ''}`}>Products</button>
-            <button onClick={() => setPage('blog')} className={`${page === 'blog' ? 'text-teal-600' : ''}`}>Blog</button>
-            <button onClick={() => setShowCart(!showCart)} className="bg-teal-600 text-white px-4 py-2 rounded">Shop ({cart.length})</button>
+    <div className="w-full">
+      {/* Hero Section */}
+      <section className="min-h-screen bg-cover bg-center relative" style={{
+        backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop)',
+        backgroundColor: '#1a472a'
+      }}>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/40"/>
+
+        {/* Content Container */}
+        <div className="relative z-10 max-w-7xl mx-auto h-full flex items-center px-6 py-20">
+          <div className="flex items-center justify-between w-full">
+            {/* Left side: Logo and Text */}
+            <div className="flex items-center gap-6">
+              {/* Logo */}
+              <img 
+                src="/gorkha-logo.svg" 
+                alt="Gorkha Jaibik Logo" 
+                className="w-24 h-24 object-contain"
+              />
+              
+              {/* Text Content */}
+              <div>
+                <h1 className="text-5xl font-bold text-white mb-4">GORKHA JAIBIK</h1>
+                <p className="text-xl text-white/90 max-w-sm leading-relaxed">
+                  Breathe in the purity of nature, live the poetry of health
+                </p>
+              </div>
+            </div>
+
+            {/* Right side: CTA Button */}
+            <div className="flex gap-4">
+              <button 
+                className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg"
+                onClick={() => document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                SHOP NOW
+              </button>
+              {cart.length > 0 && (
+                <button
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg relative"
+                  onClick={() => setShowCart(!showCart)}
+                >
+                  CART ({cart.length})
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </nav>
+      </section>
 
       {/* Cart Sidebar */}
-      {showCart && (
-        <div className="fixed right-0 top-0 w-80 h-full bg-white shadow-lg p-4 z-50">
-          <h2 className="text-xl font-bold mb-4">Shopping Cart</h2>
-          {cart.length === 0 ? (
-            <p>Your cart is empty</p>
-          ) : (
-            <>
-              {cart.map((item: any, i: number) => (
-                <div key={i} className="flex justify-between mb-2">
-                  <span>{item.name}</span>
-                  <button onClick={() => removeFromCart(i)} className="text-red-600">Remove</button>
-                </div>
-              ))}
-              <div className="border-t mt-4 pt-4">
-                <p className="text-lg font-bold">Total: Rs. {cartTotal}</p>
-                <button onClick={handleCheckout} className="w-full bg-green-600 text-white py-2 rounded mt-4">Checkout</button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Pages */}
-      {page === 'home' && (
-        <div>
-          <div className="bg-cover bg-center h-96" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200)'}}>
-            <div className="flex items-center justify-center h-full bg-black bg-opacity-40">
-              <div className="text-center text-white">
-                <h1 className="text-5xl font-bold">GORKHA JAIBIK</h1>
-                <p className="text-2xl mt-2">From Himalayas To The World</p>
-                <button className="mt-4 bg-teal-600 px-8 py-3 rounded font-bold">SHOP NOW</button>
-              </div>
+      {showCart && cart.length > 0 && (
+        <section className="fixed right-0 top-0 w-96 h-screen bg-white shadow-2xl overflow-y-auto z-50">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Shopping Cart</h2>
+              <button
+                onClick={() => setShowCart(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
             </div>
-          </div>
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <h2 className="text-4xl font-bold text-center mb-4">Welcome to Gorkha Jaibik</h2>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto">At Gorkha Jaibik, we bring the essence of the Himalayas into everyday living. Our products are sourced directly from the pristine regions of Nepal and the Himalayas.</p>
-          </div>
-        </div>
-      )}
 
-      {page === 'products' && (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-4xl font-bold text-center mb-8">Our Premium Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PRODUCTS.map((product) => (
-              <div key={product.id} className="border rounded-lg p-4 shadow">
-                <h3 className="font-bold mb-2">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-2">{product.desc}</p>
-                <p className="text-lg font-bold mb-4">Rs. {product.price}</p>
-                <button onClick={() => addToCart(product)} className="w-full bg-teal-600 text-white py-2 rounded">Add to Cart</button>
+            {cart.map((item, idx) => (
+              <div key={idx} className="mb-4 p-4 bg-gray-100 rounded-lg">
+                <h3 className="font-bold text-gray-800">{item.productName}</h3>
+                <p className="text-sm text-gray-600">{item.variant}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-green-600 font-bold">₹{item.price.toLocaleString()}</span>
+                  <div className="flex gap-2 items-center">
+                    <span className="text-gray-700">x{item.quantity}</span>
+                    <button
+                      onClick={() => removeFromCart(item.productId, item.variant)}
+                      className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
+
+            <div className="mt-8 pt-6 border-t border-gray-300">
+              <div className="flex justify-between items-center mb-6">
+                <span className="text-xl font-bold text-gray-800">Total:</span>
+                <span className="text-2xl font-bold text-green-600">₹{getTotalPrice().toLocaleString()}</span>
+              </div>
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition"
+              >
+                Proceed to Khalti Checkout
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
       )}
 
-      {page === 'about' && (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-4xl font-bold mb-8">About Gorkha Jaibik</h2>
-          <div className="bg-blue-50 p-6 rounded mb-8">
-            <p className="text-gray-700">Welcome to Gorkha Jaibik, your gateway to authentic Himalayan organic products, sourced directly from the pristine regions of Nepal and the Himalayas.</p>
-          </div>
-          <h3 className="text-2xl font-bold mb-4">Why Choose Gorkha Jaibik?</h3>
-          <div className="space-y-4">
-            <div className="border-l-4 border-teal-600 pl-4">
-              <h4 className="font-bold">100% Organic & Pure</h4>
-              <p>Every product is carefully selected to ensure maximum purity and organic certification.</p>
+      {/* Products Section */}
+      <section id="products" className="py-16 bg-gradient-to-r from-amber-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">What We Offer</h2>
+          
+          {loading ? (
+            <p className="text-center text-gray-600">Loading products...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                  <div className="relative h-48 bg-gray-200">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200'; }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    
+                    {product.variants ? (
+                      <div className="space-y-3">
+                        <select
+                          value={selectedVariants[product.id] || ''}
+                          onChange={(e) => setSelectedVariants({...selectedVariants, [product.id]: e.target.value})}
+                          className="w-full p-2 border border-gray-300 rounded text-sm"
+                        >
+                          <option value="">Select size...</option>
+                          {product.variants.map((variant, idx) => (
+                            <option key={idx} value={variant.size}>
+                              {variant.size} - {variant.price}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => addToCart(product, selectedVariants[product.id] || '')}
+                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-xl font-bold text-green-600 mb-3">{product.price}</p>
+                        <button
+                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="border-l-4 border-green-600 pl-4">
-              <h4 className="font-bold">Himalayan Heritage</h4>
-              <p>Sourced from high-altitude regions with nutritional bounty of the Himalayas.</p>
+          )}
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Ethically Sourced</h3>
+              <p className="text-gray-600">Direct from Farm</p>
+            </div>
+            <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Certified Organic</h3>
+              <p className="text-gray-600">100% Pure & Natural</p>
+            </div>
+            <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+              <h3 className="text-xl font-bold text-gray-800 mb-3">Premium Quality</h3>
+              <p className="text-gray-600">Highest Quality Standards</p>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {page === 'blog' && (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-4xl font-bold text-center mb-8">Blog & Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-2 text-lg">Raw Honey Benefits</h3>
-              <p className="text-gray-600 mb-4">Discover the amazing health benefits of raw, unfiltered Himalayan honey.</p>
-              <a href="#" className="text-teal-600 font-bold">Read More →</a>
-            </div>
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-2 text-lg">Ghee: Liquid Gold</h3>
-              <p className="text-gray-600 mb-4">Learn why ghee is considered liquid gold in traditional medicine.</p>
-              <a href="#" className="text-teal-600 font-bold">Read More →</a>
-            </div>
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-2 text-lg">Shilajit: Nature's Power</h3>
-              <p className="text-gray-600 mb-4">Explore the ancient secrets of Himalayan Shilajit and its transformative health benefits.</p>
-              <a href="#" className="text-teal-600 font-bold">Read More →</a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white mt-12 p-8 text-center">
-                </footer>
-      </div>
-    );
-  }
+      <Footer />
+    </div>
+  );
 }
-
-export default Home;
-                  
