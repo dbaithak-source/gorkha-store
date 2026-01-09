@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Footer from '../components/Footer';
 
+// Type definitions
 interface Product {
   id: number;
   name: string;
-  price?: string;
-  category: string;
-  image: string;
-  description: string;
+  price?: number;
+  category?: string;
+  image?: string;
+  description?: string;
   variants?: Array<{ size: string; price: string }>;
 }
 
@@ -22,104 +23,103 @@ interface CartItem {
   quantity: number;
 }
 
+interface SelectedVariants {
+  [key: number]: string;
+}
+
 export default function Home() {
+  // State management
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
-  const [selectedVariants, setSelectedVariants] = useState<{ [key: number]: string }>({});
+  const [selectedVariants, setSelectedVariants] = useState<SelectedVariants>({});
 
+  // Load products on mount
   useEffect(() => {
     const loadProducts = async () => {
       try {
         const response = await fetch('/products.json');
-        const data = await response.json();
-        setProducts(data);
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+        }
       } catch (error) {
         console.error('Failed to load products:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
+
     loadProducts();
   }, []);
 
-  const addToCart = (product: Product, variant: string) => {
-    if (!variant) {
-      alert('Please select a variant');
-      return;
-    }
+  // Cart management functions
+  const addToCart = (product: Product, variant: string = 'default') => {
+    if (!product.id || !product.name || !product.price) return;
 
-    const variantData = product.variants?.find(v => v.size === variant);
-    if (!variantData) return;
+    const newItem: CartItem = {
+      productId: product.id,
+      productName: product.name,
+      variant,
+      price: typeof product.price === 'string' ? parseInt(product.price) : product.price,
+      quantity: 1,
+    };
 
-    const priceStr = variantData.price.replace(/[^0-9]/g, '');
-    const price = parseInt(priceStr);
-
-    const existingItem = cart.find(
-      item => item.productId === product.id && item.variant === variant
-    );
-
-    if (existingItem) {
-      setCart(cart.map(item =>
-        item.productId === product.id && item.variant === variant
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
-    } else {
-      setCart([...cart, {
-        productId: product.id,
-        productName: product.name,
-        variant,
-        price,
-        quantity: 1
-      }]);
-    }
+    setCart((prev) => {
+      const existing = prev.find(
+        (item) => item.productId === product.id && item.variant === variant
+      );
+      if (existing) {
+        return prev.map((item) =>
+          item.productId === product.id && item.variant === variant
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, newItem];
+    });
   };
 
   const removeFromCart = (productId: number, variant: string) => {
-    setCart(cart.filter(item => !(item.productId === productId && item.variant === variant)));
+    setCart((prev) =>
+      prev.filter(
+        (item) => !(item.productId === productId && item.variant === variant)
+      )
+    );
   };
 
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const calculateTotal = (): number => {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
   const handleCheckout = () => {
-    if (cart.length === 0) {
-      alert('Please add items to cart');
-      return;
-    }
+    if (cart.length === 0) return;
 
-    const totalAmount = getTotalPrice();
-    const cartSummary = cart.map(item => `${item.productName} (${item.variant}) x${item.quantity}`).join(', ');
-
-    // Khalti Payment Integration
+    const totalAmount = calculateTotal();
     const khaltiConfig = {
-      publicKey: 'test_public_key_....', // Replace with your actual Khalti public key
-      productIdentity: 'gorkha-jaibik-store',
+      publicKey: process.env.NEXT_PUBLIC_KHALTI_PUBLIC_KEY || '',
+      productIdentity: '1234567890',
       productName: 'Gorkha Jaibik Products',
-      productUrl: window.location.href,
+      productUrl: typeof window !== 'undefined' ? window.location.href : '',
       eventHandler: {
         onSuccess: (payload: any) => {
           console.log('Payment successful:', payload);
-          alert('Payment successful! Your order has been placed.');
           setCart([]);
           setShowCart(false);
         },
         onError: (error: any) => {
-          console.error('Payment error:', error);
-          alert('Payment failed. Please try again.');
+          console.error('Payment failed:', error);
         },
         onClose: () => {
           console.log('Payment dialog closed');
-        }
+        },
       },
-      amount: totalAmount * 100 // Khalti uses paisa (cents)
     };
 
-    // Load Khalti script dynamically
+    // Load Khalti script
     const script = document.createElement('script');
-    script.src = 'https://khalti.s3.amazonaws.com/KPG/dist/2.0.0/khalti-checkout.min.js';
+    script.src = 'https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2.0.0/khalti-checkout.js';
     document.head.appendChild(script);
 
     script.onload = () => {
@@ -131,31 +131,42 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="min-h-screen bg-cover bg-center relative" style={{
-        backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop)',
-        backgroundColor: '#1a472a'
-      }}>
+      <section
+        className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+        style={{
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop)',
+          backgroundColor: '#1a472a',
+        }}
+      >
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/40"/>
+        <div className="absolute inset-0 bg-black/40" />
 
         {/* Content Container */}
         <div className="relative z-10 max-w-7xl mx-auto h-full flex items-center px-6 py-20">
           <div className="flex items-center justify-between w-full">
             {/* Left side: Logo and Text */}
             <div className="flex items-center gap-6">
-             {/* Text Content */}
+              {/* Text Content */}
               <div>
-                <h1 className="text-5xl font-bold text-white mb-4">GORKHA JAIBIK</h1>
+                <h1 className="text-5xl font-bold text-white mb-4">
+                  GORKHA JAIBIK
+                </h1>
                 <p className="text-xl text-white/90 max-w-sm leading-relaxed">
                   Breathe in the purity of nature, live the poetry of health
                 </p>
               </div>
             </div>
 
+            {/* Right side: Buttons */}
             <div className="flex gap-4">
-              <button 
+              <button
                 className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg"
-                onClick={() => document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document.querySelector('#products')?.scrollIntoView({
+                    behavior: 'smooth',
+                  })
+                }
               >
                 SHOP NOW
               </button>
@@ -191,11 +202,15 @@ export default function Home() {
                 <h3 className="font-bold text-gray-800">{item.productName}</h3>
                 <p className="text-sm text-gray-600">{item.variant}</p>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="text-green-600 font-bold">₹{item.price.toLocaleString()}</span>
+                  <span className="text-green-600 font-bold">
+                    ₹{item.price.toLocaleString()}
+                  </span>
                   <div className="flex gap-2 items-center">
                     <span className="text-gray-700">x{item.quantity}</span>
                     <button
-                      onClick={() => removeFromCart(item.productId, item.variant)}
+                      onClick={() =>
+                        removeFromCart(item.productId, item.variant)
+                      }
                       className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
                     >
                       Remove
@@ -208,13 +223,15 @@ export default function Home() {
             <div className="mt-8 pt-6 border-t border-gray-300">
               <div className="flex justify-between items-center mb-6">
                 <span className="text-xl font-bold text-gray-800">Total:</span>
-                <span className="text-2xl font-bold text-green-600">₹{getTotalPrice().toLocaleString()}</span>
+                <span className="text-2xl font-bold text-green-600">
+                  ₹{calculateTotal().toLocaleString()}
+                </span>
               </div>
               <button
                 onClick={handleCheckout}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition"
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg text-lg transition"
               >
-                Proceed to Khalti Checkout
+                Checkout with Khalti
               </button>
             </div>
           </div>
@@ -222,64 +239,12 @@ export default function Home() {
       )}
 
       {/* Products Section */}
-      <section id="products" className="py-16 bg-gradient-to-r from-amber-50 to-orange-50">
+      <section id="products" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-800">What We Offer</h2>
-          
-          {loading ? (
-            <p className="text-center text-gray-600">Loading products...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                  <div className="relative h-48 bg-gray-200">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200'; }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
-                    
-                    {product.variants ? (
-                      <div className="space-y-3">
-                        <select
-                          value={selectedVariants[product.id] || ''}
-                          onChange={(e) => setSelectedVariants({...selectedVariants, [product.id]: e.target.value})}
-                          className="w-full p-2 border border-gray-300 rounded text-sm"
-                        >
-                          <option value="">Select size...</option>
-                          {product.variants.map((variant, idx) => (
-                            <option key={idx} value={variant.size}>
-                              {variant.size} - {variant.price}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => addToCart(product, selectedVariants[product.id] || '')}
-                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="text-xl font-bold text-green-600 mb-3">{product.price}</p>
-                        <button
-                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded text-sm transition"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <h2 className="text-5xl font-bold text-gray-800 mb-4">Our Products</h2>
+          <p className="text-xl text-gray-600 max-w-sm leading-relaxed">
+            Direct from Farm to Your Table
+          </p>
         </div>
       </section>
 
@@ -288,21 +253,30 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Ethically Sourced</h3>
-              <p className="text-gray-600">Direct from Farm</p>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">
+                Ethically Sourced
+              </h3>
+              <p className="text-gray-600">
+                Direct from Farm&lt;/p&gt;
+              </p>
             </div>
             <div className="bg-amber-50 p-6 rounded-lg border-l-4 border-amber-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Certified Organic</h3>
-              <p className="text-gray-600">100% Pure & Natural</p>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">
+                Certified Organic
+              </h3>
+              <p className="text-gray-600">100% Pure & Natural&lt;/p&gt;</p>
             </div>
             <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Premium Quality</h3>
-              <p className="text-gray-600">Highest Quality Standards</p>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">
+                Premium Quality
+              </h3>
+              <p className="text-gray-600">Highest Quality Standards&lt;/p&gt;</p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Footer */}
       <Footer />
     </div>
   );
