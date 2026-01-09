@@ -37,9 +37,10 @@ export default function Home() {
 
   // Load products from API
   useEffect(() => {
-    const loadProducts = async () => {
+    const 48
+      = async () => {
       try {
-        const response = await fetch('/api/products');
+        const response = await fetch('/products.json');
         const data = await response.json();
         setProducts(data);
         setFilteredProducts(data);
@@ -51,7 +52,8 @@ export default function Home() {
       }
     };
 
-    loadProducts();
+    42
+      ();
   }, []);
 
   // Filter products by category
