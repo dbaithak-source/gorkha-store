@@ -149,37 +149,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white mt-12 p-8 text-center">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/" className="hover:text-teal-600">Home</a></li>
-                <li><a href="/about" className="hover:text-teal-600">About</a></li>
-                <li><a href="/contact" className="hover:text-teal-600">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Shop</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/shop" className="hover:text-teal-600">Products</a></li>
-                <li><a href="/certifications" className="hover:text-teal-600">Certifications</a></li>
-                <li><a href="/blog" className="hover:text-teal-600">Blog</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/shipping" className="hover:text-teal-600">Shipping</a></li>
-                <li><a href="/returns" className="hover:text-teal-600">Returns</a></li>
-                <li><a href="/privacy" className="hover:text-teal-600">Privacy</a></li>
-                <li><a href="/terms" className="hover:text-teal-600">Terms</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-8">
-        <p>© 2024 Gorkha Jaibik | GLAUM ORGANICS PVT. LTD.</p>
-                      </div>
-      </footer>
-    </div>
-  );
+                </footer>
+      </div>
+    );
+  }
 }
+
+export default Home;
+                  
