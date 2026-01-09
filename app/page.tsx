@@ -1,18 +1,5 @@
 'use client';
 import { useState } from 'react';
-import { Metadata } from 'next';
-
-export const metadata = {
-  title: 'Gorkha Jaibik - Premium Himalayan Organic Products Export',
-  description: 'Authentic organic products from the Himalayas: grass-fed ghee, raw honey, shilajit, and more. Direct from Nepal.',
-  keywords: 'organic ghee, raw honey, shilajit, Himalayan products, Nepal',
-  openGraph: {
-    title: 'Gorkha Jaibik - Premium Himalayan Products',
-    description: 'Authentic organic Himalayan products exported worldwide',
-    url: 'https://gorkhajaibik.com',
-    siteName: 'Gorkha Jaibik',
-  },
-};
 
 const PRODUCTS = [
   { id: 1, name: 'Pure Organic Grass-Fed Cow Ghee', price: 4999, category: 'ghee', desc: 'Premium clarified butter' },
@@ -46,17 +33,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Google Analytics */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-      <script>
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'GA_MEASUREMENT_ID');
-        `}
-      </script>
-
       {/* Navigation */}
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
