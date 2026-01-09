@@ -143,13 +143,7 @@ export default function Home() {
           <div className="flex items-center justify-between w-full">
             {/* Left side: Logo and Text */}
             <div className="flex items-center gap-6">
-              {/* Logo */}
-              <img 
-                src="/gorkha-logo.svg" 
-                alt="Gorkha Jaibik Logo" 
-                className="w-24 h-24 object-contain"
-              />
-              
+             
               {/* Text Content */}
               <div>
                 <h1 className="text-5xl font-bold text-white mb-4">GORKHA JAIBIK</h1>
