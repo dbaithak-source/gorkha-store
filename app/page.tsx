@@ -6,6 +6,10 @@ const PRODUCTS = [
   { id: 2, name: 'Raw Himalayan Honey', price: 3499, category: 'honey', desc: 'Unfiltered medicinal honey' },
   { id: 3, name: 'Himalayan Shilajit', price: 5999, category: 'wellness', desc: 'Pure mineral resin' },
   { id: 4, name: 'Organic Turmeric Powder', price: 1299, category: 'spices', desc: 'High-curcumin turmeric' },
+    { id: 5, name: 'Chinu Rice (Proso Millet)', price: 1899, category: 'grains', desc: 'Light ancient climate-resilient Himalayan grain' },
+  { id: 6, name: 'Marsi Rice (Himalayan Rice)', price: 2199, category: 'grains', desc: 'Ancient cold-resilient high-altitude rice' },
+  { id: 7, name: 'Dolpa Beans (Himalayan Beans)', price: 2499, category: 'superfoods', desc: 'High-altitude protein-rich Himalayan beans' },
+  { id: 8, name: 'Jumia Beans (Dense Himalayan Beans)', price: 2299, category: 'superfoods', desc: 'Cold-grown dense Himalayan beans' },
 ];
 
 export default function Home() {
