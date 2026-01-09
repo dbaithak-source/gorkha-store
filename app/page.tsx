@@ -14,11 +14,11 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
 
-  const addToCart = (product) => {
+  const addToCart = (product): any => {
     setCart([...cart, product]);
   };
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (id): any => {
     setCart(cart.filter((_, i) => i !== id));
   };
 
