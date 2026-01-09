@@ -7,39 +7,24 @@ export default function Header() {
     <header className="bg-white shadow-md">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo Text Only */}
           <Link href="/" className="flex-shrink-0">
-            <div className="text-2xl font-bold text-green-700">
-                            GORKHA JAIBIK
+            <div className="text-xl font-bold text-green-700">GORKHA JAIBIK</div>
           </Link>
 
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-green-700 font-medium transition">
-              Home
-            </Link>
-            <Link href="/#products" className="text-gray-700 hover:text-green-700 font-medium transition">
-              Shop
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-green-700 font-medium transition">
-              About
-            </Link>
-            <Link href="/trust" className="text-gray-700 hover:text-green-700 font-medium transition">
-              Why Us
-            </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-green-700 font-medium transition">
-              Blog
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-green-700 font-medium transition">
-              Contact
-            </Link>
+            <Link href="/" className="text-gray-700 hover:text-green-700 font-medium transition">Home</Link>
+            <Link href="/#products" className="text-gray-700 hover:text-green-700 font-medium transition">Shop</Link>
+            <Link href="/about" className="text-gray-700 hover:text-green-700 font-medium transition">About</Link>
+            <Link href="/trust" className="text-gray-700 hover:text-green-700 font-medium transition">Why Us</Link>
+            <Link href="/blog" className="text-gray-700 hover:text-green-700 font-medium transition">Blog</Link>
+            <Link href="/contact" className="text-gray-700 hover:text-green-700 font-medium transition">Contact</Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu */}
           <div className="md:hidden">
-            <button className="text-gray-700 hover:text-green-700">
-              ☰ Menu
-            </button>
+            <button className="text-gray-700 hover:text-green-700">Menu</button>
           </div>
         </div>
       </nav>
