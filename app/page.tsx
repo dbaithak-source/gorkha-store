@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getFeaturedProducts } from '@/lib/products';
-import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'Gorkha Jaibik — Premium Himalayan Organic Products',
@@ -176,8 +175,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
     </main>
   );
 }
