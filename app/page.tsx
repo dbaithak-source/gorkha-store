@@ -11,7 +11,7 @@ interface Product {
   category: string;
   image: string;
   description: string;
-  variants?: string[];210
+  variants?: Array<{ size: string; price: string }>;
 }
 
 interface CartItem {
@@ -53,8 +53,7 @@ export default function Home() {
     if (!variantData) return;
 
     const priceStr = variantData.price.replace(/[^0-9]/g, '');
-    const price = parseInt(priceStr);const priceStr = variant.replace(/[^0-9]/g, '');
-  const price = parseInt(priceStr);
+    const price = parseInt(priceStr);
 
     const existingItem = cart.find(
       item => item.productId === product.id && item.variant === variant
@@ -264,11 +263,7 @@ export default function Home() {
                           {product.variants.map((variant, idx) => (
                             <option key={idx} value={variant.size}>
                               {variant.size} - {variant.price}
-                            </option>{product.variants.map((variant, idx) => (
-                  <option key={idx} value={variant}>
-                    {variant}
-                  </option>
-                ))}
+                            </option>
                           ))}
                         </select>
                         <button
