@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Footer from '../../components/Footer';
 
 interface ProductVariant {
   size: string;
@@ -125,8 +124,6 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
