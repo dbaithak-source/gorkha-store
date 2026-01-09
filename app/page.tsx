@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Head from 'next/head';
+//import Head from 'next/head';
 
 const PRODUCTS = [
   { id: 1, name: 'Pure Organic Grass-Fed Cow Ghee', price: 4999, category: 'ghee', desc: 'Premium clarified butter' },
@@ -49,7 +49,7 @@ export default function Home() {
 
   return (
     <>
-      <Head>
+      {/*<Head>
         <title>{seoMeta[page]?.title || 'Gorkha Jaibik'}</title>
         <meta name="description" content={seoMeta[page]?.description || 'Himalayan organic products'} />
         <meta name="keywords" content={seoMeta[page]?.keywords || 'organic, himalayan'} />
@@ -58,7 +58,7 @@ export default function Home() {
         <meta property="og:image" content="https://gorkhajaibik.wordpress.com/wp-content/uploads/2024/01/logo.png" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR-GA-ID"></script>
         <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-YOUR-GA-ID');</script>
-      </Head>
+      </Head>*/}
 
       <div className="min-h-screen bg-white">
         {/* NAVIGATION */}
