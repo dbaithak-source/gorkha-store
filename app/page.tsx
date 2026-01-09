@@ -152,7 +152,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right side: CTA Button */}
             <div className="flex gap-4">
               <button 
                 className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition transform hover:scale-105 shadow-lg"
