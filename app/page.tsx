@@ -36,8 +36,7 @@ export default function Home() {
       {/* Navigation */}
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-teal-600">Gorkha Jaibik</h1>
-          <div className="flex gap-6">
+            <img src="/images/gorkha-logo.svg" alt="Gorkha Jaibik" className="h-12" />          <div className="flex gap-6">
             <button onClick={() => setPage('home')} className={`${page === 'home' ? 'text-teal-600' : ''}`}>Home</button>
             <button onClick={() => setPage('about')} className={`${page === 'about' ? 'text-teal-600' : ''}`}>About</button>
             <button onClick={() => setPage('products')} className={`${page === 'products' ? 'text-teal-600' : ''}`}>Products</button>
