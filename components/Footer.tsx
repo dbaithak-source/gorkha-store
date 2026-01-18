@@ -61,15 +61,15 @@ const Footer = () => {
 
             {/* Social links */}
             <div className="flex items-center gap-8">
-              <a href="#" className="text-white hover:text-amber-100 transition flex items-center gap-2">
+              <a href="https://www.instagram.com/gorkhajaibik" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-100 transition flex items-center gap-2">
                 <span className="text-xl">[IG]</span>
                 <span className="text-sm">@gorkhajabik</span>
               </a>
-              <a href="#" className="text-white hover:text-amber-100 transition flex items-center gap-2">
+              <a href="https://www.facebook.com/gorkhajaibik" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-100 transition flex items-center gap-2">
                 <span className="text-xl">[F]</span>
                 <span className="text-sm">Gorkha Jaibik</span>
               </a>
-              <a href="#" className="text-white hover:text-amber-100 transition flex items-center gap-2">
+             <a href="https://twitter.com/gorkha_jaibik" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-100 transition flex items-center gap-2">
                 <span className="text-xl">[T]</span>
                 <span className="text-sm">@gorkha.jaibik</span>
               </a>
@@ -80,7 +80,7 @@ const Footer = () => {
         {/* Copyright section */}
         <div className="px-6 md:px-12 lg:px-20 py-6 bg-green-950">
           <p className="text-center text-sm text-gray-200">
-            © 2024 Gorkha Jaibik. All rights reserved. | Premium Himalayan Organic Products
+           © 2026 Gorkha Jaibik. All rights reserved. | Premium Himalayan Organic Products
           </p>
         </div>
       </div>
