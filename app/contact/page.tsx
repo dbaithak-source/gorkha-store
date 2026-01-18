@@ -19,7 +19,7 @@ export default function ContactPage() {
             <div className="mb-8">
               <h3 className="font-bold text-lg mb-2">📍 Address</h3>
               <p className="text-gray-700">GLAUM ORGANICS PVT. LTD.</p>
-              <p className="text-gray-700">Lalitpur, Nepal</p>
+              <p className="text-gray-700">Adarsh Nagar, Birganj, Nepal</p>
             </div>
 
             <div className="mb-8">
@@ -30,7 +30,7 @@ export default function ContactPage() {
 
             <div className="mb-8">
               <h3 className="font-bold text-lg mb-2">📱 WhatsApp</h3>
-              <a href="https://wa.me/977XXXXXXXXX" className="text-teal-600 font-bold hover:underline">
+              <a href="https://wa.me/9779820797121" className="text-teal-600 font-bold hover:underline">
                 Click to chat with us
               </a>
               <p className="text-gray-600 text-sm mt-2">(Available Mon-Fri, 9 AM - 6 PM IST)</p>
